@@ -6,8 +6,10 @@ public class TabuSearch {
 
     private final TabuList tabuList;
 
-    int cantIteraciones;
     int tamanoProblema;
+
+    double currCost;
+    double fitness;
 
     private Integer[] currSolution;
     private Integer[] bestSolution;
@@ -15,11 +17,10 @@ public class TabuSearch {
     public TabuSearch(SRFLP srflp){
 
         tamanoProblema = srflp.getN();
-        cantIteraciones = tamanoProblema;
         tabuList = new TabuList(tamanoProblema);
 
-        setupCurrentSolution();
-        setupBestSolution();
+        setupCurrentSolution(); // Se incializa el vector currSolution
+        setupBestSolution();    // Se inicializa el vector bestSolution (copia de currSolution)
     }
 
     private void setupBestSolution() {
@@ -32,63 +33,78 @@ public class TabuSearch {
        for (int i = 0; i < tamanoProblema; i++){
             currSolution[i] = i;
         }
-       /**
-        En las siguientes 3 lineas, desordenamos el arreglo 'currSolution' para tener exploracion.
-        */
+
         List<Integer> list = Arrays.asList(currSolution);
-        Collections.shuffle(list);
-        System.out.println(list);
+        Collections.shuffle(list);                                  //Desordenamos el arreglo 'currSolution' para tener exploracion.
+       System.out.println(list);
         System.out.println();
    }
 
-   private double obtainValue(SRFLP srflp,int i, int j){
-        double sumdistances =0;
-        double sum=0;
-        int k=i+1;
-        while(k<j){
-            sumdistances+= srflp.getFacilitySize(k);
-            k++;
-        }
-        sum+= srflp.getWeight(i,j) * (srflp.getFacilitySize(i)/2 + sumdistances + srflp.getFacilitySize(j)/2);
-        return sum + srflp.getTotalDistance(currSolution);
-   }
+
 
     public double invoke(SRFLP srflp) {
-        double currCost = srflp.getTotalDistance(currSolution);
-        double bestCost = currCost;
-        for (int i = 0; i < cantIteraciones*10; i++) {
-            int buffer1 = 0;
-            int buffer2 = 0;
 
-            for (int j = 0; j < currSolution.length; j++) {
-                for (int k = 1; k < currSolution.length; k++) {
-                    if (j != k) {
-                        bestCost = obtainValue(srflp,j,k);
+       currCost = srflp.getTotalDistance(currSolution);              // Valor de la funcion objetivo de la solucion actual (Vector currSolution)
+       fitness = 0;                                                 // Valor de la funcion objetivo, cuando se aplica un cambio.
+       /**
+        * Este for determina cuantas veces ocurrira la búsqueda tabú.
+        * como criterio de termino utilizamos hasta que i sea menor a (tamañoProblema * n), donde n es un valor determinado por el usuario
+        * buffer1 y buffer2 son variables auxiliares para guardar j,k dado estas se utilizarán para realizar el swap.
+       */
+       for (int i = 0; i < tamanoProblema; i++) {
 
-                        if ((currCost < bestCost) && tabuList.tabuList[j][k] == 0) {
-                            buffer1 = j;
-                            buffer2 = k;
-                            swap(j,k);
-                            System.arraycopy(currSolution, 0, bestSolution, 0, bestSolution.length);
-                            currCost = bestCost;
-                        }
-                    }
-                }
-            }
-            if (buffer1 != 0) {
-                tabuList.decrementTabu();
-                tabuList.tabuMove(buffer1, buffer2);
-            }
-        }
+           for (int j = 0; j < currSolution.length; j++) {
+               for (int k = 1; k < currSolution.length; k++) {
 
-        System.out.println("La función objetivo más alta encontrada: " + currCost);
-        System.out.println(Arrays.toString(bestSolution));
-        return currCost;
+                   if (j != k) {
+                       fitness = obtainValue(srflp,j,k);
+
+                       if ((currCost < fitness) && tabuList.esTabu(j,k)) {
+
+                           swap(j,k);                // Actualiza la currSolution como una solucion mejor a la currSolution anterior
+                           tabuList.tabuMove(j,k);   // Se condiciona para posteriores movimientos el que se hizo en la linea anterior.
+
+                           System.arraycopy(currSolution, 0, bestSolution, 0, bestSolution.length); // Se encontró un cambio que mejora la solucion 'currSolution' por lo tanto se actualiza bestSolution.
+                           currCost = srflp.getTotalDistance(currSolution); //Se actualiza el currCost de la nueva solucion.
+
+                       }else{
+                            tabuList.decrementTabu();
+                       }
+
+                   }
+               }
+           }
+       }
+
+       System.out.println("La función objetivo más alta encontrada: " + currCost);
+       System.out.println(Arrays.toString(bestSolution));
+       return currCost;
     }
 
-    private void swap(int i, int k) {
-        int temp = currSolution[i];
-        currSolution[i] = currSolution[k];
+    /**
+     *   Método para obtener el valor (Esfuerzo) que significa comprar en los puestos j y k
+     */
+    private double obtainValue(SRFLP srflp, int j, int k){
+        double sumDistancias =0, sum=0;
+        int i=j+1;
+
+
+        while(i<k){                                                                                                     //Loop para obtener la distancia que hay entre los puestos j y k.
+            sumDistancias+= srflp.getFacilitySize(i);
+            i++;
+        }
+        sum= srflp.getWeight(j,k) * (srflp.getFacilitySize(j)/2 + sumDistancias + srflp.getFacilitySize(k)/2);          //Formula de esfuerzo
+        return sum + srflp.getTotalDistance(currSolution);
+    }
+
+    /**
+     * Método para realizar el swap de las posiciones en la solucion actual.
+     * @param j Posicion del puesto de feria a cambiar
+     * @param k Posicion del puesto de feria a cambiar
+     */
+    private void swap(int j, int k) {
+        int temp = currSolution[j];
+        currSolution[j] = currSolution[k];
         currSolution[k] = temp;
     }
 

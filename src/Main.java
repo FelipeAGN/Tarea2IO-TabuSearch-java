@@ -3,6 +3,9 @@ public class Main {
 
     public static void main(String[] args) {
 
+        /**
+         * Se instancia SRFLP para ser usada en la clase TabuSearch
+         */
 
         SRFLP srflp = new SRFLP("QAP_sko56_04_n.txt");
         srflp.printInstance();
@@ -12,13 +15,13 @@ public class Main {
 
         while (iteracion < 10) {
 
-            long start = System.currentTimeMillis();
+            long start = System.currentTimeMillis();                                // Se obtiene el tiempo en ms de la máquina
 
-            resultados[iteracion] = tabuSearch.invoke(srflp);
+            resultados[iteracion] = tabuSearch.invoke(srflp);                       // El resultado de tabuSearch se agrega al vector resultados
 
-            long stop = System.currentTimeMillis() - start;
+            long stop = System.currentTimeMillis() - start;                         // Stop corresponde al tiempo de fin-comienzo, es decir, el tiempo que tardó en realizar tabuSearch las 10 iteraciones.
 
-            System.out.printf("iteracion: %d\t tiempo: %d %n \n", iteracion, stop);
+            System.out.printf("iteracion: %d\t tiempo tardado: %d %n \n", iteracion, stop);
 
             iteracion ++;
 
@@ -27,6 +30,9 @@ public class Main {
         double media = 0;
         double SD = calcularDesviacionEstandar(resultados);
 
+        /**
+         * Se obtiene la media y la desviación estandar con las formula respectivas
+         */
         for(int i=0; i<resultados.length ; i++){
             System.out.println("Resultado obtenido en la iteracion numero: " + i + " de Tabu Search: " + resultados[i]);
             media+= resultados[i];
