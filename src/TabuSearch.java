@@ -59,6 +59,7 @@ public class TabuSearch {
                    if (j != k) {
                        fitness = obtainValue(srflp,j,k);
 
+                       //Como es un ejercicio de minimizacion, buscamos que el currCost sea menor
                        if ((currCost < fitness) && tabuList.esTabu(j,k)) {
 
                            swap(j,k);                // Actualiza la currSolution como una solucion mejor a la currSolution anterior
