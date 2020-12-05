@@ -10,8 +10,7 @@ Se necesita: JDK 8+.
 4. Ejecutar Main.
 
 
-Hint: Ya que nuestra implementación de Tabú Search tiene como condición de termino el número de iteraciones,
-para modificar este campo, se debe modificar el código:
+Hint: Ya que nuestra implementación de Tabú Search tiene como condición de termino el número de iteraciones es necesario modificar el código fuente para obtener los resultados que se han ingresado en el informe:
 
 Clase 'TabuSearch.java'
   Linea: 54 -> for (int i = 0; i < tamanoProblema; i++)
