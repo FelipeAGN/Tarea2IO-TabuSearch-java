@@ -31,13 +31,13 @@ public class TabuSearch {
    private void setupCurrentSolution() {
        currSolution = new Integer[tamanoProblema] ;
        for (int i = 0; i < tamanoProblema; i++){
-            currSolution[i] = i;
-        }
+           currSolution[i] = i;
+       }
 
-        List<Integer> list = Arrays.asList(currSolution);
-        Collections.shuffle(list);                                  //Desordenamos el arreglo 'currSolution' para tener exploracion.
+       List<Integer> list = Arrays.asList(currSolution);
+       Collections.shuffle(list);                                  //Desordenamos el arreglo 'currSolution' para tener exploracion.
        System.out.println(list);
-        System.out.println();
+       System.out.println();
    }
 
 
