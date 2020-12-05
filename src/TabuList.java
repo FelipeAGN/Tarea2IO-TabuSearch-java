@@ -14,8 +14,6 @@ public class TabuList {
      */
     public void tabuMove(int j, int k){ // se agregan 5 a la operacion tabu
         tabuList[j][k]+= 5;
-        tabuList[j][k]+= 5;
-
     }
 
     /**

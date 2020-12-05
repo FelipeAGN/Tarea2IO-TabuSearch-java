@@ -44,7 +44,7 @@ public class TabuSearch {
 
     public double invoke(SRFLP srflp) {
 
-       currCost = srflp.getTotalDistance(currSolution);              // Valor de la funcion objetivo de la solucion actual (Vector currSolution)
+       currCost = obtainValue(srflp,0,55);              // Valor de la funcion objetivo de la solucion actual (Vector currSolution)
        fitness = 0;                                                 // Valor de la funcion objetivo, cuando se aplica un cambio.
        /**
         * Este for determina cuantas veces ocurrira la búsqueda tabú.
@@ -60,13 +60,15 @@ public class TabuSearch {
                        fitness = obtainValue(srflp,j,k);
 
                        //Como es un ejercicio de minimizacion, buscamos que el currCost sea menor
-                       if ((currCost < fitness) && tabuList.esTabu(j,k)) {
+                       if ((currCost > fitness) && tabuList.esTabu(j,k)) {
 
                            swap(j,k);                // Actualiza la currSolution como una solucion mejor a la currSolution anterior
+
                            tabuList.tabuMove(j,k);   // Se condiciona para posteriores movimientos el que se hizo en la linea anterior.
 
                            System.arraycopy(currSolution, 0, bestSolution, 0, bestSolution.length); // Se encontró un cambio que mejora la solucion 'currSolution' por lo tanto se actualiza bestSolution.
-                           currCost = srflp.getTotalDistance(currSolution); //Se actualiza el currCost de la nueva solucion.
+
+                           currCost = fitness; //Se actualiza el currCost de la nueva solucion.
 
                        }else{
                             tabuList.decrementTabu();
